@@ -1,0 +1,6 @@
+image: /home/gj/slam+nav/map/cartomap.pgm
+resolution: 0.050000	#珊格分辨率0.05米
+origin: [-7.333711, -7.348354, 0.0]	#机器人起始位置 x，y，theta
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196

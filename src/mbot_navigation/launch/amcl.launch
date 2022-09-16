@@ -1,0 +1,78 @@
+<launch>
+    #使用直接服务形式加载地图文件
+    <arg name="use_map_topic" default="false"/>
+    #激光数据话题，3d数据记得转2d
+    <arg name="scan_topic" default="scan"/>
+
+    <node pkg="amcl" type="amcl" name="amcl" output="screen">
+        #可视化发布频率
+        <param name="gui_publish_rate" value="10.0"/>
+        <param name="use_map_topic" value="$(arg use_map_topic)"/>
+        <remap from="scan" to="$(arg scan_topic)"/>
+        #里程计模型
+          #差速  修正错误后的新模型: diff-corrected 
+        <param name="odom_model_type" value="diff"/>
+          #全向  odom_alpha5只与全向轮相关
+        <!-- <param name="odom_model_type" value="omni"/> -->
+        <!-- <param name="odom_alpha5" value="0.1"/> -->
+        #里程计运动模型的噪声：1旋转运动产生的旋转噪声, 2平移运动产生的旋转噪声, 3平移运动产生的平移噪声, 4旋转运动产生的平移噪声
+        #在xx_corrected 新模型下意义可能不一样,需要去官网查阅
+        <param name="odom_alpha1" value="0.2"/>
+        <param name="odom_alpha2" value="0.2"/>
+        <param name="odom_alpha3" value="0.8"/>
+        <param name="odom_alpha4" value="0.2"/>
+
+        #粒子数
+        <param name="min_particles" value="500"/>
+        <param name="max_particles" value="2000"/>
+        #估计分布与真实分布的误差
+        <param name="kld_err" value="0.05"/>
+        #估计分布的误差小于kld_err的概率
+        <param name="kld_z" value="0.99"/>
+
+        #高斯模型的权重
+        <param name="laser_z_hit" value="0.5"/>
+        <param name="laser_z_rand" value="0.5"/>
+        <param name="laser_z_short" value="0.05"/>
+        <param name="laser_z_max" value="0.05"/>
+        #hit模型的标准差,short的指数衰减参数
+        <param name="laser_sigma_hit" value="0.2"/>
+        <param name="laser_lambda_short" value="0.1"/>
+        #激光最远、最近距离
+        <param name="laser_max_range" value="12.0"/>
+        <param name="laser_min_range" value="0.5"/>
+
+        <!-- 
+        使用beam: 必须z_hit+z_short+z_max+z_rand = 1
+        使用likelihood: 必须z_hit +z_rand = 1 
+        -->
+        #激光模型
+          #似然场模型
+        <param name="laser_model_type" value="likelihood_field"/>
+          #似然场模型下，障碍物膨胀的最大距离（车运行的安全距离）
+        <param name="laser_likelihood_max_dist" value="2.0"/>
+          #光束模型
+        <!-- <param name="laser_model_type" value="beam"/> -->
+         #坐标系
+        <param name="odom_frame_id" value="odom"/>
+        <param name="base_frame_id" value="base_footprint"/>
+         
+        #粒子更新条件：向前运动距离m、旋转的角度rad
+        <param name="update_min_d" value="0.2"/>
+        <param name="update_min_a" value="0.3"/>
+
+        #更新的时候，选多少束激光计算分布
+        <param name="laser_max_beams" value="50"/>  
+
+        #重采样之前，滤波器更新次数 2~5次
+        <param name="resample_interval" value="1"/>
+        #已发布的tf在未来有效的时间s
+        <param name="transform_tolerance" value="0.1"/>
+        #是否发布map->odom的tf关系
+        <param name="tf_broadcast" value="true"/>
+        #0.001
+        <param name="recovery_alpha_slow" value="0.0"/>
+        #0.1
+        <param name="recovery_alpha_fast" value="0.0"/>
+    </node>
+</launch>

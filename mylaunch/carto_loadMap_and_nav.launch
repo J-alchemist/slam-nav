@@ -1,0 +1,13 @@
+<launch>
+
+	#仿真环境 + robot model#
+	<include file="$(find mbot_gazebo)/launch/mbot_laser_nav_gazebo.launch" />
+
+	#move_base + amcl#
+	<include file="$(find cartographer_ros)/launch/my/my_demo_backpack_2d_localization.launch" />
+
+</launch>
+
+
+
+

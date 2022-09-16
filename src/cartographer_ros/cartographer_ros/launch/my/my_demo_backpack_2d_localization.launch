@@ -1,0 +1,31 @@
+<launch>
+
+#/home/gj/slam+nav/data/pure_localization/createMap.bag.pbstream
+#/home/gj/slam+nav/map/cartomap.pbstream
+
+# map
+  <arg name="load_state_filename" default="/home/gj/slam+nav/map/cartomap.pbstream" />	
+	
+# cartographer_node
+  <node name="cartographer_node" pkg="cartographer_ros" 
+      type="cartographer_node" args="
+          -configuration_directory  $(find cartographer_ros)/configuration_files/my
+          -configuration_basename  revo_lds.lua
+          -load_state_filename  $(arg load_state_filename)" 
+      output="screen">
+    <remap from="echoes" to="scan" />
+  </node>
+
+# grid and pure
+  <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros"
+      type="cartographer_occupancy_grid_node" args=" -resolution 0.05 " />
+
+# rviz
+  <node name="rviz" pkg="rviz" type="rviz" required="true"
+      args="-d $(find cartographer_ros)/configuration_files/demo_2d.rviz" />
+
+</launch>
+
+
+
+
